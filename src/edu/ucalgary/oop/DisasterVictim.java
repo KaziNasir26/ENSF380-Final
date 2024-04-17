@@ -1,10 +1,7 @@
 package edu.ucalgary.oop;
 
 import java.util.List;
-import java.util.Arrays;
 import java.util.ArrayList;
-import java.time.LocalDate;
-
 
 public class DisasterVictim {
     private static int counter = 0;
@@ -13,12 +10,15 @@ public class DisasterVictim {
     private String lastName;
     private String dateOfBirth;
     private final int ASSIGNED_SOCIAL_ID;
-    private ArrayList<FamilyRelation> familyConnections = new ArrayList<>();
-    private ArrayList<MedicalRecord> medicalRecords = new ArrayList<>();
-    private Supply[] personalBelongings;
+    private List<FamilyRelation> familyConnections = new ArrayList<>();
+    private List<MedicalRecord> medicalRecords = new ArrayList<>();
+    private List<Supply> personalBelongings = new ArrayList<>();
     private final String ENTRY_DATE;
     private String gender;
     private String comments;
+    private int age;
+    private List<String> genderOptions;
+    private List<DietaryRestriction> dietaryRestrictions;
 
     public DisasterVictim(String firstName, String ENTRY_DATE) {
         this.firstName = firstName;
@@ -27,7 +27,6 @@ public class DisasterVictim {
         }
         this.ENTRY_DATE = ENTRY_DATE;
         this.ASSIGNED_SOCIAL_ID = generateSocialID();
-
     }
 
     private static int generateSocialID() {
@@ -40,8 +39,28 @@ public class DisasterVictim {
         return date.matches(dateFormatPattern);
     }
 
+    public int getAge() {
+        return age;
+    }
 
-    // Getters and setters
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void setGender(String gender) {
+        if (!genderOptions.contains(gender)) {
+            throw new IllegalArgumentException("Invalid gender. Acceptable values are " + genderOptions);
+        }
+        this.gender = gender.toLowerCase();
+    }
+
+    public List<DietaryRestriction> getDietaryRestrictions() {
+        return new ArrayList<>(dietaryRestrictions);
+    }
+
+    public void setDietaryRestrictions(List<DietaryRestriction> dietaryRestrictions) {
+        this.dietaryRestrictions = new ArrayList<>(dietaryRestrictions);
+    }
 
     public String getFirstName() {
         return firstName;
@@ -74,89 +93,43 @@ public class DisasterVictim {
         return ASSIGNED_SOCIAL_ID;
     }
 
-    public FamilyRelation[] getFamilyConnections() {
-        return familyConnections.toArray(new FamilyRelation[0]);
+    public List<FamilyRelation> getFamilyConnections() {
+        return new ArrayList<>(familyConnections);
     }
 
-    public MedicalRecord[] getMedicalRecords() {
-        return medicalRecords.toArray(new MedicalRecord[0]);
+    public List<MedicalRecord> getMedicalRecords() {
+        return new ArrayList<>(medicalRecords);
     }
 
-    public Supply[] getPersonalBelongings() {
-        return this.personalBelongings;
+    public List<Supply> getPersonalBelongings() {
+        return new ArrayList<>(personalBelongings);
     }
 
-    // The add and remove methods remain correct.
-
-    // Correct the setters to accept Lists instead of arrays
-    public void setFamilyConnections(FamilyRelation[] connections) {
-        this.familyConnections.clear();
-        for (FamilyRelation newRecord : connections) {
-            addFamilyConnection(newRecord);
+    public void addFamilyConnection(FamilyRelation relation) {
+        if (relation != null && !this.familyConnections.contains(relation)) {
+            this.familyConnections.add(relation);
+            relation.getPersonTwo().getFamilyConnections().add(relation);
         }
     }
 
-    public void setMedicalRecords(MedicalRecord[] records) {
-        this.medicalRecords.clear();
-        for (MedicalRecord newRecord : records) {
-            addMedicalRecord(newRecord);
+    public void removeFamilyConnection(FamilyRelation relation) {
+        if (relation != null && this.familyConnections.contains(relation)) {
+            this.familyConnections.remove(relation);
+            relation.getPersonTwo().getFamilyConnections().remove(relation);
         }
     }
 
-    public void setPersonalBelongings(Supply[] belongings) {
-        this.personalBelongings = belongings;
+    public void addPersonalBelonging(Supply supply, Location location) {
+        if (supply != null && !this.personalBelongings.contains(supply)) {
+            this.personalBelongings.add(supply);
+            //location.getAvailableSupplies().remove();
+        }
     }
 
-    // Add a Supply to personalBelonging
-    public void addPersonalBelonging(Supply supply) {
-
-        if (this.personalBelongings == null) {
-            Supply tmpSupply[] = { supply };
-            this.setPersonalBelongings(tmpSupply);
-            return;
-        }
-
-        // Create an array one larger than the previous array
-        int newLength = this.personalBelongings.length + 1;
-        Supply tmpPersonalBelongings[] = new Supply[newLength];
-
-        // Copy all the items in the current array to the new array
-        int i;
-        for (i=0; i < personalBelongings.length; i++) {
-            tmpPersonalBelongings[i] = this.personalBelongings[i];
-        }
-
-        // Add the new element at the end of the new array
-        tmpPersonalBelongings[i] = supply;
-
-        // Replace the original array with the new array
-        this.personalBelongings = tmpPersonalBelongings;
-    }
-
-    // Remove a Supply from personalBelongings, we assume it only appears once
     public void removePersonalBelonging(Supply unwantedSupply) {
-        Supply[] updatedBelongings = new Supply[personalBelongings.length-1];
-        int index = 0;
-        int newIndex = index;
-        for (Supply supply : personalBelongings) {
-            if (!supply.equals(unwantedSupply)) {
-                updatedBelongings[newIndex] = supply;
-                newIndex++;
-            }
-            index++;
-        }
+        personalBelongings.remove(unwantedSupply);
     }
 
-    public void removeFamilyConnection(FamilyRelation exRelation) {
-        familyConnections.remove(exRelation);
-    }
-
-    public void addFamilyConnection(FamilyRelation record) {
-        familyConnections.add(record);
-    }
-
-
-    // Add a MedicalRecord to medicalRecords
     public void addMedicalRecord(MedicalRecord record) {
         medicalRecords.add(record);
     }
@@ -177,17 +150,4 @@ public class DisasterVictim {
         return gender;
     }
 
-    public void setGender(String gender) {
-        if (!gender.matches("(?i)^(male|female|other)$")) {
-            throw new IllegalArgumentException("Invalid gender. Acceptable values are male, female, or other.");
-        }
-        this.gender = gender.toLowerCase(); // Store in a consistent format
-    }
-
-
 }
-
-
-
-
-

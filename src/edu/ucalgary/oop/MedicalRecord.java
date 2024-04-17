@@ -7,16 +7,14 @@ public class MedicalRecord {
     private Location location;
     private String treatmentDetails;
     private String dateOfTreatment;
-
-    public MedicalRecord(Location location, String treatmentDetails, String dateOfTreatment) throws IllegalArgumentException {
-        setLocation(location);
-        this.treatmentDetails = treatmentDetails;
-
-        // Check if the treatmentDetails string matches the expected date format
-        if (!isValidDateFormat(dateOfTreatment)) {
-            throw new IllegalArgumentException("Invalid date format for treatment details. Expected format: YYYY-MM-DD");
-        }
-        this.dateOfTreatment = dateOfTreatment;
+    private String condition;
+    private String date;
+    private String details;
+    public MedicalRecord(Location location, String condition, String date, String details) {
+        this.location = location;
+        this.condition = condition;
+        this.date = date;
+        this.details = details;
     }
 
     // Getter and setter for location

@@ -150,4 +150,8 @@ public class Location {
     public void removeSupply(Supply supply) {
         supplies.remove(supply);
     }
+
+//    public ThreadLocal<Object> getAvailableSupplies() {
+//        return ;
+//    }
 }

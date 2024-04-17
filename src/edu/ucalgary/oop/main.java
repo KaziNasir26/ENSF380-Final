@@ -12,17 +12,16 @@ public class main {
         victim2.addFamilyConnection(familyRelation);
 
         // Add medical records
-
         Location location = new Location("Some Place", "Some Address");
-        MedicalRecord medicalRecord = new MedicalRecord(location, "Allergy", "Needs regular medication");
+        MedicalRecord medicalRecord = new MedicalRecord(location, "Allergy", "2024-04-17", "Needs regular medication");
         victim1.addMedicalRecord(medicalRecord);
 
         // Manage personal belongings
         Supply supply = new Supply("Water Bottle", 1);
-        victim1.addPersonalBelonging(supply);
+        victim1.addPersonalBelonging(supply, location);
 
         // Display some information
-        System.out.println("Victim 1 Family Connections: " + victim1.getFamilyConnections().length);
+        System.out.println("Victim 1 Family Connections: " + victim1.getFamilyConnections().size());
         System.out.println("Victim 1 Medical Records: " + victim1.getMedicalRecords().size());
         System.out.println("Victim 1 Personal Belongings: " + victim1.getPersonalBelongings().size());
     }
